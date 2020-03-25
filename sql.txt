@@ -1,0 +1,64 @@
+create database scbi_database;
+use scbi_database;
+
+
+
+create table tbl_usernamePassword(id int auto_increment primary key,user_name varchar(25),password varchar(25));
+create table tbl_manufactured_categories(id int auto_increment primary key,name varchar(25),created datetime,last_updated timestamp default current_timestamp);
+insert into tbl_manufactured_categories(name,created,last_updated)
+values("abhi",'2000-05-31','2000-10-15');
+select * from tbl_manufactured_categories;
+
+create table tbl_manufactured_product(id int auto_increment primary key,category_id int,name varchar(25),last_updated timestamp default current_timestamp,timestamp_created timestamp default current_timestamp ,foreign key (category_id) references tbl_manufactured_categories(id));
+insert into tbl_manufactured_product(category_id,name,last_updated,timestamp_created)
+values(2,"aryan",'2001-12-17',default);
+select * from tbl_manufactured_product;
+
+create table tbl_dept_info(id int auto_increment primary key,name varchar(25),last_updated timestamp default current_timestamp);
+insert into tbl_dept_info(name,last_updated)
+values("fish",default);
+
+create table tbl_employee_info(id int auto_increment primary key, name varchar(25), date_of_birth date,date_of_joining date,salary double,dept_id int,foreign key (dept_id) references tbl_dept_info(id));
+insert into tbl_employee_info(name,date_of_birth,date_of_joining,salary,dept_id)
+values("gold fish",'2000-12-10','2019-11-15',15000.97,1);
+
+create table tbl_design_color(id int auto_increment primary key,name varchar(25),timestamp_created timestamp,remarks varchar(55));
+insert into tbl_design_color(name,timestamp_created)
+values("red",default);
+
+create table tbl_manufactured_product_logs(id int auto_increment primary key,product_id int,name varchar(25),date_created date, workdone boolean default 0,reason varchar(50),emp_id_updated int,design_id int,foreign key (product_id) references tbl_manufactured_product(id),foreign key (emp_id_updated) references tbl_employee_info(id),foreign key (design_id) references tbl_design_color(id));
+insert into tbl_manufactured_product_logs(product_id,name,date_created,workdone,reason,emp_id_updated,design_id)
+values(2,"rohan",'2020-12-10',0,"due to rain",1,1);
+
+create table tbl_employee_finance(id int auto_increment primary key, empId int, bankAccountNo bigint , bankAccountName varchar(25), bankAccountType varchar(15),lastUpdated timestamp default current_timestamp,foreign key (empId) references tbl_employee_info(id) );
+
+
+create table tbl_customer_table(id int auto_increment primary key,name varchar(25),address varchar(75), mobile1 bigint, mobile2 bigint,lastUpdated timestamp default current_timestamp,check (mobile1 >1000000000 AND mobile1<9999999999),check (mobile2>1000000000 AND mobile2<9999999999));
+
+
+create table tbl_sales_logs(id int auto_increment primary key,saleDate date,productId int, customerId int,quantity float,location varchar(75),total_price float,payment_mode varchar(15), vehicle_type varchar(20),lastUpdated timestamp default current_timestamp,foreign key(productId) references tbl_manufactured_product(id),foreign key(customerId) references tbl_customer_table(id));
+
+
+create table tbl_ssn_type(id int auto_increment primary key,name varchar(25),lastUpdated timestamp default current_timestamp);
+
+
+create table tbl_employee_personal(id int auto_increment primary key,empId int,ssn varchar(20), ssn_id int,address varchar(75),salary_type varchar(25) ,salary float,lastUpdated timestamp default current_timestamp,foreign key(ssn_id) references tbl_ssn_type(id),foreign key (empId) references tbl_employee_info(id) );
+
+
+
+create table tbl_employee_attachments(empid int, attachment varchar(25),picture longblob,foreign key(empid) references tbl_employee_info(id) );
+
+
+delimiter $$
+create procedure proc_manufactured_products(in fromDate date,in toDate date)
+begin
+select * from tbl_manufactured_product_logs
+where date_created between fromDate and toDate;
+end$$
+
+delimiter $$
+create procedure proc_sales_logs(in fromDate date,in toDate date)
+begin
+select * from tbl_sales_logs
+where date_created between fromDate and toDate;
+end$$
