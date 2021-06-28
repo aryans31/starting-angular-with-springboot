@@ -1,1 +1,6 @@
 this is just a test project to push on github.
+
+i made this one during my internship 
+
+for api and beckend i have used springboot and java
+and for frontend i have used angular
